@@ -35,4 +35,63 @@
 
 Como vocês já conhecem a maioria dos itens contidos nessa base eu vou comentar somente sobre as anormalidades.
 
+### Gemfile e Fastlane
+
+Provavelmente eu vou escrever um artigo explicando qual o meu fluxo com o [fastlane](https://fastlane.tools/). Mas vamos iniciar com o que é o fastlane:
+
+> The easiest way to build and release mobile apps. fastlane handles tedious tasks so you don’t have to.
+
+Simples assim. Gosto de pensar nele como um [gulp.js](https://gulpjs.com/) feito para desenvolvimento do aplicativos nativos. A pasta fastlane contém todas as configurações e informações necessárias relacionadas as plataformas iOS/Android. O Gemfile é o equivalente ao package.json para Ruby, que é a linguagem na qual o fastlane foi construído, portanto serve para que todo o time esteja alinhado em dependências relacionadas ao fastlane e para que todos tenhamos o próprio fastlane instalado.
+
+Prometo editar esse post e adicionar o link (quando estiver disponível) do meu fluxo com o fastlane.
+
 ### babel.config.js
+
+Tá. Isso não é anormal, mas eu gostaria de mostrar o interior dele para vocês:
+
+```javascript
+module.exports = {
+  presets: ['module:metro-react-native-babel-preset'],
+  plugins: [
+    ['module-resolver', { root: ['./app'] }]
+  ]
+}
+```
+
+Module resolver? Sim, eu já sofri muito tendo que escrever require/import com caminhos muito longos e essa é a forma que eu encontrei (tanto com essa estruta ou não) de ser o mais objetivo possível ao escrever os caminhos podendo iniciar qualquer um deles iniciando com alguma pasta dentro de app que seriam os módulos do app. Ex.:
+
+**Considerando a estrutura abaixo:**
+```
+app
+├── Master.js
+└── utils
+    ├── to-money.js
+    └── pluck-uniq.js
+```
+
+**Independente de onde estivermos dentro do código, podemos escrever sem medo:**
+```javascript
+import toMoney from 'utils/to-money';
+import pluckUniq from 'utils/pluck-uniq';
+```
+
+Clean and beaultiful. Lembrando que isso funciona em qualquer parte do código por causa do babelzinho e esse plugin que nos ajuda demais da conta (sô).
+
+Pra frizar esse exemplo, quero dar um exemplo do que poderia ser caso não utilzassemos o Module Resolver:
+
+```javascript
+import toMoney from '../../../../../../../utils/to-money';
+import pluckUniq from '../../../../../../../utils/pluck-uniq';
+```
+
+> Exagero? Sim, mas passou de um `../` eu já quero morrer.
+
+Mas Bruno, não poderiamos usar um package.json dentro de app com o name igual a app e importarmos tudo com app antes conforme o exemplo abaixo?
+
+```javascript
+import toMoney from 'app/utils/to-money';
+import pluckUniq from 'app/utils/pluck-uniq';
+```
+
+Sim. Mas eu não quero.
+
